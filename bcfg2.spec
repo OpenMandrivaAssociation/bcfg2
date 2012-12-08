@@ -1,20 +1,18 @@
-Name:             bcfg2
-Version:          1.2.2
-Release:          1
-Summary:          A configuration management system
-Group:            System/Base
-License:          BSD
-URL:              http://bcfg2.org
-Source0:          ftp://ftp.mcs.anl.gov/pub/bcfg/bcfg2-%{version}.tar.gz
-Source1:          ftp://ftp.mcs.anl.gov/pub/bcfg/bcfg2-%{version}.tar.gz.gpg
-BuildArch:        noarch
+Name:		bcfg2
+Version:	1.2.2
+Release:	2
+Summary:	A configuration management system
+Group:		System/Base
+License:	BSD
+URL:		http://bcfg2.org
+Source0:	ftp://ftp.mcs.anl.gov/pub/bcfg/bcfg2-%{version}.tar.gz
+Source1:	ftp://ftp.mcs.anl.gov/pub/bcfg/bcfg2-%{version}.tar.gz.gpg
+BuildArch:	noarch
+Requires(post):	rpm-helper
+Requires(preun): rpm-helper
 
-BuildRequires:    python-setuptools
-Requires:         python-lxml
-Requires(post):   /sbin/chkconfig
-Requires(preun):  /sbin/chkconfig
-Requires(preun):  /sbin/service
-Requires(postun): /sbin/service
+BuildRequires:	python-setuptools
+Requires:	python-lxml
 
 %description
 Bcfg2 helps system administrators produce a consistent, reproducible,
@@ -43,69 +41,58 @@ Bcfg2 can enable the construction of complex change management and
 deployment strategies.
 
 %package server
-Summary:          Configuration management server
-Group:            System/Base
-Requires:         bcfg2 = %{version}-%{release}
-Requires:         /usr/sbin/sendmail
-Requires:         /usr/bin/openssl
-Requires:         gamin-python
-Requires:         redhat-lsb
-Requires:         python-genshi
-Requires:         python-cheetah
-Requires:         graphviz
-Requires(post):   /sbin/chkconfig
-Requires(preun):  /sbin/chkconfig
-Requires(preun):  /sbin/service
-Requires(postun): /sbin/service
+Summary:	Configuration management server
+Group:		System/Base
+Requires:	bcfg2 = %{version}-%{release}
+Requires:	sendmail
+Requires:	openssl
+Requires:	python-gamin
+Requires:	python-genshi
+Requires:	python-cheetah
+Requires:	graphviz
+Requires(post):	rpm-helper
+Requires(preun): rpm-helper
 
 %description server
 Configuration management server
 
 %package doc
-Summary:          Documentation for Bcfg2
-Group:            Development/Other
+Summary:	Documentation for Bcfg2
+Group:		Development/Other
 
-BuildRequires:    python-sphinx
-BuildRequires:    python-docutils
+BuildRequires:	python-sphinx
+BuildRequires:	python-docutils
 
 %description doc
 Documentation for Bcfg2.
 
 %prep
 %setup -q -n %{name}-%{version}%{?_rc:rc%{_rc}}
-#%setup -q -n %{name}-%{version}%{?_pre:pre%{_pre}}
 
 # fixup some paths
-%{__perl} -pi -e 's@/etc/default@%{_sysconfdir}/sysconfig@g' debian/bcfg2.init
-%{__perl} -pi -e 's@/etc/default@%{_sysconfdir}/sysconfig@g' debian/bcfg2-server.init
-%{__perl} -pi -e 's@/etc/default@%{_sysconfdir}/sysconfig@g' tools/bcfg2-cron
+perl -pi -e 's@/etc/default@%{_sysconfdir}/sysconfig@g' debian/bcfg2.init
+perl -pi -e 's@/etc/default@%{_sysconfdir}/sysconfig@g' debian/bcfg2-server.init
+perl -pi -e 's@/etc/default@%{_sysconfdir}/sysconfig@g' tools/bcfg2-cron
 
-%{__perl} -pi -e 's@/usr/lib/bcfg2@%{_libexecdir}@g' debian/bcfg2.cron.daily
-%{__perl} -pi -e 's@/usr/lib/bcfg2@%{_libexecdir}@g' debian/bcfg2.cron.hourly
+perl -pi -e 's@/usr/lib/bcfg2@%{_libexecdir}@g' debian/bcfg2.cron.daily
+perl -pi -e 's@/usr/lib/bcfg2@%{_libexecdir}@g' debian/bcfg2.cron.hourly
 
 # don't start servers by default
-%{__perl} -pi -e 's@chkconfig: (\d+)@chkconfig: -@' debian/bcfg2.init
-%{__perl} -pi -e 's@chkconfig: (\d+)@chkconfig: -@' debian/bcfg2-server.init
+perl -pi -e 's@chkconfig: (\d+)@chkconfig: -@' debian/bcfg2.init
+perl -pi -e 's@chkconfig: (\d+)@chkconfig: -@' debian/bcfg2-server.init
 
 # get rid of extraneous shebangs
 for f in `find src/lib -name \*.py`
 do
-        %{__sed} -i -e '/^#!/,1d' $f
+    sed -i -e '/^#!/,1d' $f
 done
 
 %build
-%{__python} -c 'import setuptools; execfile("setup.py")' build
-#%{__python} -c 'import setuptools; execfile("setup.py")' build_dtddoc
-%{__python} -c 'import setuptools; execfile("setup.py")' build_sphinx
-
-
-#%{?pythonpath: export PYTHONPATH="%{pythonpath}"}
-#%{__python}%{pythonversion} setup.py build_dtddoc
-#%{__python}%{pythonversion} setup.py build_sphinx
-
+python -c 'import setuptools; execfile("setup.py")' build
+python -c 'import setuptools; execfile("setup.py")' build_sphinx
 
 %install
-%{__python} -c 'import setuptools; execfile("setup.py")' install --skip-build --root %{buildroot}
+python -c 'import setuptools; execfile("setup.py")' install --skip-build --root %{buildroot}
 
 mkdir -p %{buildroot}%{_sbindir}
 mkdir -p %{buildroot}%{_initrddir}
@@ -133,35 +120,18 @@ touch %{buildroot}%{_sysconfdir}/bcfg2.conf
 touch %{buildroot}%{_sysconfdir}/bcfg2.key
 
 mv build/sphinx/html/* %{buildroot}%{_defaultdocdir}/bcfg2-doc-%{version}%{?_pre:pre%{_pre}}
-#mv build/dtd %{buildroot}%{_defaultdocdir}/bcfg2-doc-%{version}/
 
 %post
-/sbin/chkconfig --add bcfg2
+%_post_service bcfg2
 
 %preun
-if [ $1 = 0 ]; then
-        /sbin/service bcfg2 stop >/dev/null 2>&1 || :
-        /sbin/chkconfig --del bcfg2
-fi
-
-%postun
-if [ "$1" -ge "1" ]; then
-        /sbin/service bcfg2 condrestart >/dev/null 2>&1 || :
-fi
+%_preun_service bcfg2
 
 %post server
-/sbin/chkconfig --add bcfg2-server
+%_post_service bcfg2-server
 
 %preun server
-if [ $1 = 0 ]; then
-        /sbin/service bcfg2-server stop >/dev/null 2>&1 || :
-        /sbin/chkconfig --del bcfg2-server
-fi
-
-%postun server
-if [ "$1" -ge "1" ]; then
-        /sbin/service bcfg2-server condrestart >/dev/null 2>&1 || :
-fi
+%_preun_service bcfg2-server
 
 %files
 %doc AUTHORS examples COPYRIGHT README
@@ -200,3 +170,14 @@ fi
 
 %files doc
 %doc %{_defaultdocdir}/bcfg2-doc-%{version}%{?_pre:pre%{_pre}}
+
+
+%changelog
+* Tue Apr 17 2012 Alexander Khrukin <akhrukin@mandriva.org> 1.2.2-1
++ Revision: 791423
+- version update 1.2.2
+
+* Wed Dec 28 2011 Alexander Khrukin <akhrukin@mandriva.org> 1.2.0-1
++ Revision: 745876
+- imported package bcfg2
+
