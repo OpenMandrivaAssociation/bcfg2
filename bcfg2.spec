@@ -11,8 +11,8 @@ BuildArch:	noarch
 Requires(post):	rpm-helper
 Requires(preun): rpm-helper
 
-BuildRequires:	python-setuptools
-Requires:	python-lxml
+BuildRequires:	python2-setuptools
+Requires:	python2-lxml
 
 %description
 Bcfg2 helps system administrators produce a consistent, reproducible,
@@ -61,7 +61,7 @@ Summary:	Documentation for Bcfg2
 Group:		Development/Other
 
 BuildRequires:	python-sphinx
-BuildRequires:	python-docutils
+BuildRequires:	python2-docutils
 
 %description doc
 Documentation for Bcfg2.
