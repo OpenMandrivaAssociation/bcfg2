@@ -1,6 +1,6 @@
 Name:		bcfg2
-Version:	1.2.2
-Release:	3
+Version:	1.3.6
+Release:	1
 Summary:	A configuration management system
 Group:		System/Base
 License:	BSD
