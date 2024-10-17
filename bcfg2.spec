@@ -4,7 +4,7 @@ Release:	1
 Summary:	A configuration management system
 Group:		System/Base
 License:	BSD
-URL:		http://bcfg2.org
+URL:		https://bcfg2.org
 Source0:	ftp://ftp.mcs.anl.gov/pub/bcfg/bcfg2-%{version}.tar.gz
 Source1:	ftp://ftp.mcs.anl.gov/pub/bcfg/bcfg2-%{version}.tar.gz.gpg
 BuildArch:	noarch
